@@ -6,7 +6,7 @@
  */
 window.DUNBER_CONFIG = {
   SUPABASE_URL: 'https://mzkhkgkcyfzpljslcmri.supabase.co',
-  SUPABASE_ANON_KEY: '',   // eyJhbGciOi... (clave "anon public")
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16a2hrZ2tjeWZ6cGxqc2xjbXJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5NTkxMzAsImV4cCI6MjEwNjUzNTEzMH0.gYNkTTkQ1-hfFJSpv1_CshWuKjJ5hBR60X0KT7FLmQw',
   SUPABASE_TABLE: 'basededatosdunbersa',
   WHATSAPP_NUMBER: '5493516201626'
 };
