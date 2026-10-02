@@ -1,0 +1,8 @@
+# Archivos de trabajo originales (los optimizados viven en assets/img)
+/logos/
+/logo*.png
+desktop.ini
+.claude/
+node_modules/
+.env
+supabase/.temp/
