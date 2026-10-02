@@ -15,7 +15,7 @@ assets/js/main.js          Menú, animaciones de entrada y reveal
 assets/js/form.js          Formulario -> Supabase (+ enlace a WhatsApp)
 assets/js/config.js        URL y anon key de Supabase, número de WhatsApp
 assets/img/                Logos optimizados, favicon e imagen para redes
-supabase/schema.sql        Tabla `leads` + RLS (solo INSERT para el público)
+supabase/schema.sql        Tabla `basededatosdunbersa` + RLS (solo INSERT para el público)
 supabase/functions/        Edge Function que avisa por WhatsApp
 ```
 
@@ -44,7 +44,7 @@ Un navegador no puede mandar WhatsApp "solo" a un número, así que el aviso se 
    supabase functions deploy notify-lead --no-verify-jwt
    supabase secrets set CALLMEBOT_PHONE=5493516201626 CALLMEBOT_APIKEY=<tu_apikey> WEBHOOK_SECRET=<texto_largo_aleatorio>
    ```
-3. En Supabase: **Database → Webhooks → Create**: tabla `leads`, evento `INSERT`, tipo *Supabase Edge Functions* → `notify-lead`, y agregá el header `x-webhook-secret` con el mismo valor de `WEBHOOK_SECRET`.
+3. En Supabase: **Database → Webhooks → Create**: tabla `basededatosdunbersa`, evento `INSERT`, tipo *Supabase Edge Functions* → `notify-lead`, y agregá el header `x-webhook-secret` con el mismo valor de `WEBHOOK_SECRET`.
 
 Alternativa más robusta (WhatsApp Business Cloud API de Meta): reemplazar el `fetch` de la función por la llamada a la API oficial.
 

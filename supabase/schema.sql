@@ -1,5 +1,5 @@
 -- Tabla de leads de la landing de Dunber
-create table if not exists public.leads (
+create table if not exists public.basededatosdunbersa (
   id            uuid primary key default gen_random_uuid(),
   created_at    timestamptz not null default now(),
   nombre        text not null check (char_length(nombre) between 2 and 80),
@@ -13,11 +13,11 @@ create table if not exists public.leads (
 );
 
 -- Seguridad: el público solo puede INSERTAR. Nadie puede leer/editar con la anon key.
-alter table public.leads enable row level security;
+alter table public.basededatosdunbersa enable row level security;
 
-drop policy if exists "anon puede insertar leads" on public.leads;
+drop policy if exists "anon puede insertar leads" on public.basededatosdunbersa;
 create policy "anon puede insertar leads"
-  on public.leads
+  on public.basededatosdunbersa
   for insert
   to anon
   with check (true);
