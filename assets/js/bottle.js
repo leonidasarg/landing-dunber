@@ -33,7 +33,7 @@
   function flutes() {
     var d = '';
     for (var x = 36; x <= 84; x += 6) {
-      d += 'M' + x + ',104 L' + x + ',184 M' + x + ',262 L' + x + ',368 ';
+      d += 'M' + x + ',104 L' + x + ',180 M' + x + ',262 L' + x + ',368 ';
     }
     return sx(d);
   }
@@ -84,6 +84,9 @@
         '<stop offset="0" stop-color="#fff" stop-opacity=".38"/><stop offset=".25" stop-color="#fff" stop-opacity=".06"/><stop offset=".75" stop-color="#fff" stop-opacity=".04"/><stop offset="1" stop-color="#fff" stop-opacity=".3"/>' +
       '</linearGradient>' +
       '<linearGradient id="db-tint" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#d8f0e6" stop-opacity=".35"/><stop offset=".8" stop-color="#9fd4bd" stop-opacity=".3"/><stop offset="1" stop-color="#4fa883" stop-opacity=".85"/></linearGradient>' +
+      '<linearGradient id="db-label-shade" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".45"/><stop offset=".3" stop-color="#fff" stop-opacity=".18"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".4"/></linearGradient>' +
+      // Pasa el logo rojo a blanco conservando su transparencia
+      '<filter id="db-white" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0"/></filter>' +
       '<linearGradient id="db-foam" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f4d9b8"/><stop offset="1" stop-color="#7a2a14"/></linearGradient>' +
     '</defs>' +
     '<g class="tilt" id="db-tilt">' +
@@ -114,7 +117,14 @@
       '<path d="' + sx('M48,8 L72,8 L74,16 C74,20 72,22 70,22 L50,22 C48,22 46,20 46,16 Z') + '" fill="#e61a27" stroke="#8c0b14" stroke-width="1"/>' +
       '<path d="' + sx('M50,10 L50,20 M54,10 L54,20 M58,10 L58,20 M62,10 L62,20 M66,10 L66,20 M70,10 L70,20') + '" stroke="#fff" stroke-opacity=".28" stroke-width="1"/>' +
       // Texto serigrafiado
-      '<text x="60" y="150" text-anchor="middle" font-family="Yellowtail, cursive" font-size="30" fill="#fff" transform="rotate(-6 60 150)" textLength="86" lengthAdjust="spacingAndGlyphs">Coca-Cola</text>' +
+      // Etiqueta roja con el logo de Coca-Cola, en la cintura de la botella
+      '<g clip-path="url(#db-clip)">' +
+        '<rect x="0" y="184" width="120" height="64" fill="#e61a27"/>' +
+        '<rect x="0" y="184" width="120" height="64" fill="url(#db-label-shade)"/>' +
+        '<rect x="0" y="186" width="120" height="1.2" fill="#fff" fill-opacity=".85"/>' +
+        '<rect x="0" y="244.8" width="120" height="1.2" fill="#fff" fill-opacity=".85"/>' +
+      '</g>' +
+      '<image href="assets/img/marcas/coca-cola.webp" x="25" y="203" width="70" height="25.4" preserveAspectRatio="xMidYMid meet" filter="url(#db-white)"/>' +
     '</g>' +
     '</svg>';
   document.body.appendChild(host);

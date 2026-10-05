@@ -3,8 +3,7 @@
   position: fixed;
   z-index: 50;
   right: clamp(8px, 2vw, 36px);
-  top: calc(50% + 34px);
-  transform: translateY(-50%);
+  bottom: 16px;
   height: min(34vh, 300px);
   aspect-ratio: 120 / 400;
   pointer-events: none;
@@ -17,10 +16,8 @@
 
 @media (max-width: 1099px) {
   #dunber-bottle {
-    top: auto;
     bottom: 12px;
     right: 6px;
-    transform: none;
     height: min(17vh, 125px);
     opacity: .96;
   }
