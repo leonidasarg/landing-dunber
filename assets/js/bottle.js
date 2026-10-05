@@ -13,48 +13,43 @@
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Ancho de la botella: escala horizontal respecto del eje x = 60
-  var WIDTH = 1.7;
+  var WIDTH = 2;
   function sx(d) {
     return d.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g, function (m, x, y) {
       return (60 + (x - 60) * WIDTH).toFixed(1) + ',' + y;
     });
   }
 
-  // Contorno de la botella (viewBox 0 0 120 400), simétrico respecto de x = 60
+  // Contorno de la botella (viewBox 0 0 120 400), simétrico respecto de x = 60.
+  // Cuello, hombros, cuerpo recto (donde va la etiqueta), cintura, curva inferior y base.
   var BOTTLE = sx(
-    'M50,22 L70,22 C71,24 71,28 69.5,31 C69,45 70,58 72,70 C75,88 89,102 90,130 ' +
-    'C91,152 85,176 83,198 C82,214 84,236 89,256 C92,270 92,290 91,320 ' +
-    'C90,345 88,360 88,374 C88,386 84,392 77,392 L43,392 ' +
-    'C36,392 32,386 32,374 C32,360 30,345 29,320 C28,290 28,270 31,256 ' +
-    'C36,236 38,214 37,198 C35,176 29,152 30,130 C31,102 45,88 48,70 ' +
-    'C50,58 51,45 50.5,31 C49,28 49,24 50,22 Z');
+    'M50,22 L70,22 C71,24 71,28 69.5,31 C69,50 70,68 71.5,82 C73,100 85,112 85.5,138 ' +
+    'C86,165 86,205 85,232 C84.5,248 83,256 83.2,266 C83.5,285 87.5,300 87.5,322 ' +
+    'C87.5,345 86,362 86,376 C86,387 82,392 76,392 L44,392 ' +
+    'C38,392 34,387 34,376 C34,362 32.5,345 32.5,322 C32.5,300 36.5,285 36.8,266 ' +
+    'C37,256 35.5,248 35,232 C34,205 34,165 34.5,138 C35,112 47,100 48.5,82 ' +
+    'C50,68 51,50 50.5,31 C49,28 49,24 50,22 Z');
 
-  // Estrías verticales del vidrio en las dos curvas de la botella
+  var LABEL_TOP = 150;     // etiqueta sobre el tramo recto del cuerpo
+  var LABEL_H = 62;
+  var LEVEL_TOP = 64;      // superficie del líquido con la botella llena (y)
+  var DRAIN = 340;         // recorrido total del líquido hasta quedar vacía
+  var WAVE_PERIOD = 60;
+  var LIQUID = '#170403';  // negro rojizo
+
+  // Estrías verticales del vidrio en los hombros y en la curva inferior
   function flutes() {
     var d = '';
-    for (var x = 36; x <= 84; x += 6) {
-      d += 'M' + x + ',104 L' + x + ',180 M' + x + ',262 L' + x + ',368 ';
+    for (var x = 37; x <= 83; x += 5.75) {
+      d += 'M' + x + ',100 L' + x + ',' + (LABEL_TOP - 4) + ' M' + x + ',272 L' + x + ',370 ';
     }
     return sx(d);
-  }
-
-  var LEVEL_TOP = 64;      // superficie del líquido con la botella llena (y)
-  var DRAIN = 360;         // recorrido total del líquido hasta quedar vacía
-  var WAVE_PERIOD = 60;
-
-  function wavePath() {
-    var d = 'M-' + WAVE_PERIOD * 2 + ',0';
-    for (var x = -WAVE_PERIOD * 2; x < 180; x += WAVE_PERIOD) {
-      d += ' q' + WAVE_PERIOD / 4 + ',-7 ' + WAVE_PERIOD / 2 + ',0 t' + WAVE_PERIOD / 2 + ',0';
-    }
-    d += ' L200,420 L-' + WAVE_PERIOD * 2 + ',420 Z';
-    return d;
   }
 
   function crestPath() {
     var d = 'M-' + WAVE_PERIOD * 2 + ',0';
     for (var x = -WAVE_PERIOD * 2; x < 180; x += WAVE_PERIOD) {
-      d += ' q' + WAVE_PERIOD / 4 + ',-7 ' + WAVE_PERIOD / 2 + ',0 t' + WAVE_PERIOD / 2 + ',0';
+      d += ' q' + WAVE_PERIOD / 4 + ',-6 ' + WAVE_PERIOD / 2 + ',0 t' + WAVE_PERIOD / 2 + ',0';
     }
     return d;
   }
@@ -62,10 +57,10 @@
   function bubbles(n) {
     var out = '';
     for (var i = 0; i < n; i++) {
-      var x = 24 + Math.random() * 72;
+      var x = 18 + Math.random() * 84;
       var r = 0.9 + Math.random() * 1.8;
-      out += '<circle class="bub" cx="' + x.toFixed(1) + '" cy="' + (330 - Math.random() * 40).toFixed(0) +
-        '" r="' + r.toFixed(1) + '" fill="#fff" fill-opacity=".55"/>';
+      out += '<circle class="bub" cx="' + x.toFixed(1) + '" cy="' + (388 - Math.random() * 30).toFixed(0) +
+        '" r="' + r.toFixed(1) + '" fill="#fff" fill-opacity=".6"/>';
     }
     return out;
   }
@@ -77,97 +72,111 @@
     '<svg viewBox="0 0 120 400" xmlns="http://www.w3.org/2000/svg" focusable="false">' +
     '<defs>' +
       '<clipPath id="db-clip"><path d="' + BOTTLE + '"/></clipPath>' +
-      '<linearGradient id="db-liquid" x1="0" x2="1" y1="0" y2="0">' +
-        '<stop offset="0" stop-color="#1c0402"/><stop offset=".3" stop-color="#4f0d05"/><stop offset=".55" stop-color="#6d170a"/><stop offset=".8" stop-color="#3f0a04"/><stop offset="1" stop-color="#160301"/>' +
+      // Zona ocupada por el líquido: se achica a medida que baja el nivel
+      '<clipPath id="db-liq-clip"><rect id="db-liq-rect" x="0" y="' + LEVEL_TOP + '" width="120" height="400"/></clipPath>' +
+      // Sombreado fijo del líquido (no se mueve con la ola, así no parpadea)
+      '<linearGradient id="db-liq-shade" gradientUnits="userSpaceOnUse" x1="0" x2="120" y1="0" y2="0">' +
+        '<stop offset="0" stop-color="#000" stop-opacity=".7"/><stop offset=".28" stop-color="#5c1208" stop-opacity=".55"/>' +
+        '<stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset=".85" stop-color="#000" stop-opacity=".35"/>' +
+        '<stop offset="1" stop-color="#000" stop-opacity=".75"/>' +
       '</linearGradient>' +
-      '<linearGradient id="db-glass" x1="0" x2="1" y1="0" y2="0">' +
-        '<stop offset="0" stop-color="#fff" stop-opacity=".38"/><stop offset=".25" stop-color="#fff" stop-opacity=".06"/><stop offset=".75" stop-color="#fff" stop-opacity=".04"/><stop offset="1" stop-color="#fff" stop-opacity=".3"/>' +
+      '<linearGradient id="db-glass" gradientUnits="userSpaceOnUse" x1="0" x2="120" y1="0" y2="0">' +
+        '<stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".22" stop-color="#fff" stop-opacity=".05"/>' +
+        '<stop offset=".78" stop-color="#fff" stop-opacity=".03"/><stop offset="1" stop-color="#fff" stop-opacity=".28"/>' +
       '</linearGradient>' +
-      '<linearGradient id="db-tint" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#d8f0e6" stop-opacity=".35"/><stop offset=".8" stop-color="#9fd4bd" stop-opacity=".3"/><stop offset="1" stop-color="#4fa883" stop-opacity=".85"/></linearGradient>' +
-      '<linearGradient id="db-label-shade" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".45"/><stop offset=".3" stop-color="#fff" stop-opacity=".18"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".4"/></linearGradient>' +
+      '<linearGradient id="db-tint" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="20" y2="392">' +
+        '<stop offset="0" stop-color="#d8f0e6" stop-opacity=".35"/><stop offset=".85" stop-color="#9fd4bd" stop-opacity=".3"/>' +
+        '<stop offset="1" stop-color="#4fa883" stop-opacity=".85"/>' +
+      '</linearGradient>' +
+      '<linearGradient id="db-label-shade" gradientUnits="userSpaceOnUse" x1="0" x2="120" y1="0" y2="0">' +
+        '<stop offset="0" stop-color="#000" stop-opacity=".45"/><stop offset=".28" stop-color="#fff" stop-opacity=".2"/>' +
+        '<stop offset=".42" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".4"/>' +
+      '</linearGradient>' +
       // Pasa el logo rojo a blanco conservando su transparencia
       '<filter id="db-white" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0"/></filter>' +
-      '<linearGradient id="db-foam" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f4d9b8"/><stop offset="1" stop-color="#7a2a14"/></linearGradient>' +
     '</defs>' +
     '<g class="tilt" id="db-tilt">' +
       // Interior de vidrio
       '<path d="' + BOTTLE + '" fill="url(#db-tint)"/>' +
-      // Líquido (se vacía bajando el grupo #db-level)
       '<g clip-path="url(#db-clip)">' +
-        '<g id="db-level">' +
-          '<g id="db-wave"><path d="' + wavePath() + '" fill="url(#db-liquid)"/>' +
-            '<path d="' + crestPath() + '" fill="none" stroke="url(#db-foam)" stroke-width="3" stroke-linecap="round" opacity=".9"/>' +
-          '</g>' +
-          '<g id="db-bubbles">' + bubbles(16) + '</g>' +
+        // Superficie con ola: color plano para que no cambie al moverse
+        '<g id="db-level"><g id="db-wave">' +
+          '<path d="' + crestPath() + ' L200,420 L-' + WAVE_PERIOD * 2 + ',420 Z" fill="' + LIQUID + '"/>' +
+          '<path d="' + crestPath() + '" fill="none" stroke="#b9774c" stroke-opacity=".55" stroke-width="2.2" stroke-linecap="round"/>' +
+        '</g></g>' +
+        '<g clip-path="url(#db-liq-clip)">' +
+          '<rect x="0" y="0" width="120" height="400" fill="url(#db-liq-shade)"/>' +
+          // Burbujas: suben dentro del líquido mientras quede líquido
+          '<g id="db-bubbles">' + bubbles(18) + '</g>' +
         '</g>' +
       '</g>' +
       // Reflejos del vidrio
       '<path d="' + BOTTLE + '" fill="url(#db-glass)"/>' +
-      '<rect x="0" y="372" width="120" height="22" fill="#4fa883" fill-opacity=".45" clip-path="url(#db-clip)"/>' +
-      '<path d="' + flutes() + '" clip-path="url(#db-clip)" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="2.2" stroke-linecap="round"/>' +
-      '<path d="' + sx('M36,112 C33,135 34,160 39,184') + '" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="3" stroke-linecap="round"/>' +
-      '<path d="' + sx('M35,264 C33,290 33,320 35,352') + '" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2.6" stroke-linecap="round"/>' +
-      '<path d="' + sx('M84,124 C86,145 85,165 81,186') + '" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="2" stroke-linecap="round"/>' +
-      '<path d="' + sx('M55,36 L55,64') + '" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.6" stroke-linecap="round"/>' +
+      '<rect x="0" y="374" width="120" height="20" fill="#4fa883" fill-opacity=".45" clip-path="url(#db-clip)"/>' +
+      '<path d="' + flutes() + '" clip-path="url(#db-clip)" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width="2.4" stroke-linecap="round"/>' +
+      '<path d="' + sx('M37,108 C36,120 35.5,132 36,144') + '" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3" stroke-linecap="round"/>' +
+      '<path d="' + sx('M37.5,222 C37.5,236 38.5,250 39,262') + '" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="2.4" stroke-linecap="round"/>' +
+      '<path d="' + sx('M36,284 C35,305 35,330 36.5,356') + '" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2.6" stroke-linecap="round"/>' +
+      '<path d="' + sx('M83,286 C84,305 84,330 83,352') + '" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="2" stroke-linecap="round"/>' +
+      '<path d="' + sx('M55,36 L55.5,76') + '" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.8" stroke-linecap="round"/>' +
+      // Etiqueta roja con el logo de Coca-Cola, sobre el tramo recto del cuerpo
+      '<g clip-path="url(#db-clip)">' +
+        '<rect x="0" y="' + LABEL_TOP + '" width="120" height="' + LABEL_H + '" fill="#e61a27"/>' +
+        '<rect x="0" y="' + LABEL_TOP + '" width="120" height="' + LABEL_H + '" fill="url(#db-label-shade)"/>' +
+        '<rect x="0" y="' + (LABEL_TOP + 3) + '" width="120" height="1.2" fill="#fff" fill-opacity=".85"/>' +
+        '<rect x="0" y="' + (LABEL_TOP + LABEL_H - 4.2) + '" width="120" height="1.2" fill="#fff" fill-opacity=".85"/>' +
+      '</g>' +
+      '<image href="assets/img/marcas/coca-cola.webp" x="18" y="' + (LABEL_TOP + LABEL_H / 2 - 15) + '" width="84" height="30" preserveAspectRatio="xMidYMid meet" filter="url(#db-white)"/>' +
       // Contorno
       '<path d="' + BOTTLE + '" fill="none" stroke="#2f6b55" stroke-opacity=".6" stroke-width="2.6" stroke-linejoin="round"/>' +
       '<path d="' + BOTTLE + '" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="1.3" stroke-linejoin="round"/>' +
-      '<path d="' + BOTTLE + '" fill="none" stroke="#5a0b11" stroke-opacity=".35" stroke-width=".8"/>' +
       // Tapa corona
-      '<path d="' + sx('M48,8 L72,8 L74,16 C74,20 72,22 70,22 L50,22 C48,22 46,20 46,16 Z') + '" fill="#e61a27" stroke="#8c0b14" stroke-width="1"/>' +
-      '<path d="' + sx('M50,10 L50,20 M54,10 L54,20 M58,10 L58,20 M62,10 L62,20 M66,10 L66,20 M70,10 L70,20') + '" stroke="#fff" stroke-opacity=".28" stroke-width="1"/>' +
-      // Texto serigrafiado
-      // Etiqueta roja con el logo de Coca-Cola, en la cintura de la botella
-      '<g clip-path="url(#db-clip)">' +
-        '<rect x="0" y="184" width="120" height="64" fill="#e61a27"/>' +
-        '<rect x="0" y="184" width="120" height="64" fill="url(#db-label-shade)"/>' +
-        '<rect x="0" y="186" width="120" height="1.2" fill="#fff" fill-opacity=".85"/>' +
-        '<rect x="0" y="244.8" width="120" height="1.2" fill="#fff" fill-opacity=".85"/>' +
-      '</g>' +
-      '<image href="assets/img/marcas/coca-cola.webp" x="25" y="203" width="70" height="25.4" preserveAspectRatio="xMidYMid meet" filter="url(#db-white)"/>' +
+      '<path d="M39,8 L81,8 L83,15 C83,20 81,22 79,22 L41,22 C39,22 37,20 37,15 Z" fill="#e61a27" stroke="#8c0b14" stroke-width="1"/>' +
+      '<path d="M42,10 L42,20 M48,10 L48,20 M54,10 L54,20 M60,10 L60,20 M66,10 L66,20 M72,10 L72,20 M78,10 L78,20" stroke="#fff" stroke-opacity=".28" stroke-width="1"/>' +
     '</g>' +
     '</svg>';
   document.body.appendChild(host);
 
   var level = host.querySelector('#db-level');
+  var liqRect = host.querySelector('#db-liq-rect');
   var wave = host.querySelector('#db-wave');
   var tilt = host.querySelector('#db-tilt');
   var bubs = host.querySelectorAll('.bub');
 
-  // Altura de la superficie con la botella llena
-  level.setAttribute('transform', 'translate(0 ' + LEVEL_TOP + ')');
+  function setLevel(y) {
+    level.setAttribute('transform', 'translate(0 ' + y.toFixed(2) + ')');
+    liqRect.setAttribute('y', (y + 1).toFixed(2));
+  }
+  setLevel(LEVEL_TOP);
   wave.style.transformBox = 'view-box';
 
   // Línea de tiempo pausada: el scroll la recorre con seek()
   var tl = createTimeline({ autoplay: false, defaults: { ease: 'linear' } });
 
-  // El nivel baja con el scroll. Usamos un objeto proxy para escribir el atributo transform del <g>
+  // El nivel baja con el scroll. Usamos un objeto proxy para escribir los atributos del SVG
   var state = { y: 0 };
   tl.add(state, {
     y: DRAIN,
     duration: 1000,
-    onUpdate: function () {
-      level.setAttribute('transform', 'translate(0 ' + (LEVEL_TOP + state.y).toFixed(2) + ')');
-    }
+    onUpdate: function () { setLevel(LEVEL_TOP + state.y); }
   }, 0);
   tl.add(tilt, { rotate: [0, -2, -3, -9], duration: 1000, ease: 'inOutSine' }, 0);
 
-  // Entrada de la botella
-  if (!reduceMotion) {
-    animate(tilt, { translateY: [-30, 0], duration: 1200, ease: 'outElastic(1, .6)', delay: 300 });
+  // Burbujas ascendentes: siempre activas
+  animate(bubs, {
+    translateY: function () { return [0, -(60 + Math.random() * 280)]; },
+    opacity: [{ to: .7, duration: 400 }, { to: 0, duration: 900 }],
+    duration: function () { return 2200 + Math.random() * 2800; },
+    delay: stagger(200, { from: 'random' }),
+    ease: 'inOutSine',
+    loop: true
+  });
 
+  if (!reduceMotion) {
+    // Entrada de la botella
+    animate(tilt, { translateY: [-30, 0], duration: 1200, ease: 'outElastic(1, .6)', delay: 300 });
     // Ondulación de la superficie
     animate(wave, { translateX: [0, -WAVE_PERIOD], duration: 1800, ease: 'linear', loop: true });
-
-    // Burbujas ascendentes
-    animate(bubs, {
-      translateY: function () { return [0, -(150 + Math.random() * 220)]; },
-      opacity: [{ to: .65, duration: 400 }, { to: 0, duration: 900 }],
-      duration: function () { return 2200 + Math.random() * 2800; },
-      delay: stagger(220, { from: 'random' }),
-      ease: 'inOutSine',
-      loop: true
-    });
   }
 
   // Scroll -> progreso (0..1), con suavizado
