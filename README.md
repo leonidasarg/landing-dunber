@@ -38,7 +38,7 @@ Sin configurar Supabase, el formulario igual ofrece enviar la consulta por Whats
 
 Un navegador no puede mandar WhatsApp "solo" a un número, así que el aviso se hace desde el servidor:
 
-1. Activá CallMeBot para tu número: agregá el contacto **+34 644 52 74 88** y enviale `I allow callmebot to send me messages`. Te responde con tu `apikey`.
+1. Activá CallMeBot para tu número: agregá el contacto **+34 644 99 26 98** y enviale `I allow callmebot to send me messages`. Te responde con tu `apikey`.
 2. Desplegá la función y cargá los secretos:
    ```bash
    supabase functions deploy notify-lead --no-verify-jwt
