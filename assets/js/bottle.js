@@ -14,9 +14,10 @@
 
   // Ancho de la botella: escala horizontal respecto del eje x = 60
   var WIDTH = 2;
-  function sx(d) {
+  function sx(d, k) {
+    var f = WIDTH * (k === undefined ? 1 : k);
     return d.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g, function (m, x, y) {
-      return (60 + (x - 60) * WIDTH).toFixed(1) + ',' + y;
+      return (60 + (x - 60) * f).toFixed(1) + ',' + y;
     });
   }
 
@@ -30,6 +31,12 @@
     'C37,256 35.5,248 35,232 C34,205 34,165 34.5,138 C35,112 47,100 48.5,82 ' +
     'C50,68 51,50 50.5,31 C49,28 49,24 50,22 Z');
 
+  // Tramos del contorno derecho, para dibujar estrías y reflejos que siguen la curva
+  var SHOULDER = 'M71.5,82 C73,100 85,112 85.5,138 L85.7,146';
+  var LOWER = 'M84.5,272 C85.5,288 87.5,300 87.5,322 C87.5,345 86,362 86,372';
+  var SIDE = 'M72,86 C74,102 85,112 85.5,138 C86,165 86,205 85,232 C84.5,248 83,256 83.2,266 ' +
+    'C83.5,285 87.5,300 87.5,322 C87.5,345 86,358 86,366';
+
   var LABEL_TOP = 150;     // etiqueta sobre el tramo recto del cuerpo
   var LABEL_H = 62;
   var LEVEL_TOP = 64;      // superficie del líquido con la botella llena (y)
@@ -40,10 +47,10 @@
   // Estrías verticales del vidrio en los hombros y en la curva inferior
   function flutes() {
     var d = '';
-    for (var x = 37; x <= 83; x += 5.75) {
-      d += 'M' + x + ',100 L' + x + ',' + (LABEL_TOP - 4) + ' M' + x + ',272 L' + x + ',370 ';
+    for (var k = -0.78; k <= 0.79; k += 0.26) {
+      d += sx(SHOULDER, k) + ' ' + sx(LOWER, k) + ' ';
     }
-    return sx(d);
+    return d;
   }
 
   function crestPath() {
@@ -58,8 +65,8 @@
     var out = '';
     for (var i = 0; i < n; i++) {
       var x = 18 + Math.random() * 84;
-      var r = 0.9 + Math.random() * 1.8;
-      out += '<circle class="bub" cx="' + x.toFixed(1) + '" cy="' + (388 - Math.random() * 30).toFixed(0) +
+      var r = 0.6 + Math.pow(Math.random(), 2) * 2.4;
+      out += '<circle class="bub" cx="' + x.toFixed(1) + '" cy="' + (390 - Math.random() * 240).toFixed(0) +
         '" r="' + r.toFixed(1) + '" fill="#fff" fill-opacity=".6"/>';
     }
     return out;
@@ -107,18 +114,18 @@
         '<g clip-path="url(#db-liq-clip)">' +
           '<rect x="0" y="0" width="120" height="400" fill="url(#db-liq-shade)"/>' +
           // Burbujas: suben dentro del líquido mientras quede líquido
-          '<g id="db-bubbles">' + bubbles(18) + '</g>' +
+          '<g id="db-bubbles">' + bubbles(46) + '</g>' +
         '</g>' +
       '</g>' +
       // Reflejos del vidrio
       '<path d="' + BOTTLE + '" fill="url(#db-glass)"/>' +
       '<rect x="0" y="374" width="120" height="20" fill="#4fa883" fill-opacity=".45" clip-path="url(#db-clip)"/>' +
       '<path d="' + flutes() + '" clip-path="url(#db-clip)" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width="2.4" stroke-linecap="round"/>' +
-      '<path d="' + sx('M37,108 C36,120 35.5,132 36,144') + '" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3" stroke-linecap="round"/>' +
-      '<path d="' + sx('M37.5,222 C37.5,236 38.5,250 39,262') + '" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="2.4" stroke-linecap="round"/>' +
-      '<path d="' + sx('M36,284 C35,305 35,330 36.5,356') + '" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2.6" stroke-linecap="round"/>' +
-      '<path d="' + sx('M83,286 C84,305 84,330 83,352') + '" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="2" stroke-linecap="round"/>' +
-      '<path d="' + sx('M55,36 L55.5,76') + '" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.8" stroke-linecap="round"/>' +
+      '<g clip-path="url(#db-clip)" fill="none" stroke="#fff" stroke-linecap="round">' +
+        '<path d="' + sx(SIDE, -0.86) + '" stroke-opacity=".5" stroke-width="3"/>' +
+        '<path d="' + sx(SIDE, 0.84) + '" stroke-opacity=".2" stroke-width="2"/>' +
+        '<path d="' + sx('M55.2,34 C55.6,50 55.2,66 54,80') + '" stroke-opacity=".45" stroke-width="1.8"/>' +
+      '</g>' +
       // Etiqueta roja con el logo de Coca-Cola, sobre el tramo recto del cuerpo
       '<g clip-path="url(#db-clip)">' +
         '<rect x="0" y="' + LABEL_TOP + '" width="120" height="' + LABEL_H + '" fill="#e61a27"/>' +
@@ -164,10 +171,10 @@
 
   // Burbujas ascendentes: siempre activas
   animate(bubs, {
-    translateY: function () { return [0, -(60 + Math.random() * 280)]; },
+    translateY: function () { return [0, -(50 + Math.random() * 200)]; },
     opacity: [{ to: .7, duration: 400 }, { to: 0, duration: 900 }],
     duration: function () { return 2200 + Math.random() * 2800; },
-    delay: stagger(200, { from: 'random' }),
+    delay: stagger(90, { from: 'random' }),
     ease: 'inOutSine',
     loop: true
   });
