@@ -12,11 +12,10 @@ assets/css/styles.css      Estilos
 assets/css/bottle.css      Estilos de la botella fija
 assets/js/bottle.js        Botella de vidrio que se vacía con el scroll (módulo autónomo)
 assets/js/main.js          Menú, animaciones de entrada y reveal
-assets/js/form.js          Formulario -> Supabase (+ enlace a WhatsApp)
+assets/js/form.js          Formulario -> Supabase
 assets/js/config.js        URL y anon key de Supabase, número de WhatsApp
 assets/img/                Logos optimizados, favicon e imagen para redes
 supabase/schema.sql        Tabla `basededatosdunbersa` + RLS (solo INSERT para el público)
-supabase/functions/        Edge Function que avisa por WhatsApp
 ```
 
 ## Probar en local
@@ -32,21 +31,7 @@ npx http-server . -p 5173 -c-1
 3. En **Project Settings → API** copiá la *Project URL* y la clave *anon public* y pegalas en `assets/js/config.js`.
    (La anon key es pública; la seguridad la da RLS. **Nunca** uses la `service_role` key en el front.)
 
-Sin configurar Supabase, el formulario igual ofrece enviar la consulta por WhatsApp.
-
-## Aviso automático por WhatsApp (+54 9 351 620-1626)
-
-Un navegador no puede mandar WhatsApp "solo" a un número, así que el aviso se hace desde el servidor:
-
-1. Activá CallMeBot para tu número: agregá el contacto **+34 644 99 26 98** y enviale `I allow callmebot to send me messages`. Te responde con tu `apikey`.
-2. Desplegá la función y cargá los secretos:
-   ```bash
-   supabase functions deploy notify-lead --no-verify-jwt
-   supabase secrets set CALLMEBOT_PHONE=5493516201626 CALLMEBOT_APIKEY=<tu_apikey> WEBHOOK_SECRET=<texto_largo_aleatorio>
-   ```
-3. En Supabase: **Database → Webhooks → Create**: tabla `basededatosdunbersa`, evento `INSERT`, tipo *Supabase Edge Functions* → `notify-lead`, y agregá el header `x-webhook-secret` con el mismo valor de `WEBHOOK_SECRET`.
-
-Alternativa más robusta (WhatsApp Business Cloud API de Meta): reemplazar el `fetch` de la función por la llamada a la API oficial.
+Al enviar, el formulario guarda la consulta en la tabla y muestra un mensaje de agradecimiento. Las consultas se ven en **Table Editor → basededatosdunbersa**.
 
 ## Publicar (GitHub Pages)
 

@@ -1,4 +1,4 @@
-/* Formulario de contacto: guarda el lead en Supabase y ofrece avisar por WhatsApp */
+/* Formulario de contacto: guarda el lead en Supabase */
 (function () {
   'use strict';
   var cfg = window.DUNBER_CONFIG || {};
@@ -37,24 +37,6 @@
   Object.keys(rules).forEach(function (name) {
     form.elements[name].addEventListener('blur', function () { setError(name, rules[name](this.value.trim())); });
   });
-
-  function waLink(data) {
-    var lines = [
-      '*Nuevo cliente potencial - Web Dunber*',
-      'Nombre: ' + data.nombre,
-      'Comercio: ' + data.comercio,
-      'Teléfono: ' + data.telefono,
-      'Localidad: ' + data.localidad
-    ];
-    if (data.tipo_comercio) lines.push('Tipo: ' + data.tipo_comercio);
-    if (data.mensaje) lines.push('Mensaje: ' + data.mensaje);
-    return 'https://wa.me/' + (cfg.WHATSAPP_NUMBER || '5493516201626') + '?text=' + encodeURIComponent(lines.join('\n'));
-  }
-
-  function escapeHtml(s) {
-    var map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-    return s.replace(/[&<>"']/g, function (c) { return map[c]; });
-  }
 
   function show(kind, html) {
     status.hidden = false;
@@ -109,13 +91,10 @@
     saveLead(data).then(function () {
       form.reset();
       startedAt = Date.now();
-      show('ok', '<strong>¡Gracias, ' + escapeHtml(data.nombre) + '!</strong> Recibimos tus datos y te vamos a contactar a la brevedad.' +
-        '<br>Si querés una respuesta más rápida, escribinos también por WhatsApp:' +
-        '<br><a class="btn" href="' + waLink(data) + '" target="_blank" rel="noopener">Enviar por WhatsApp</a>');
+      show('ok', '<strong>¡Gracias por contactarnos!</strong> En breve un representante de la empresa se pondrá en contacto con vos.');
     }).catch(function (err) {
       console.error(err);
-      show('fail', 'No pudimos guardar tu consulta en este momento. Podés enviarla igual por WhatsApp:' +
-        '<br><a class="btn" href="' + waLink(data) + '" target="_blank" rel="noopener">Enviar por WhatsApp</a>');
+      show('fail', 'No pudimos enviar tu consulta en este momento. Por favor, intentá de nuevo en unos minutos.');
     }).then(function () {
       btn.disabled = false;
       btnText.textContent = 'Enviar mis datos';
