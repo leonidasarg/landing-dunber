@@ -15,13 +15,14 @@
 #dunber-bottle .tilt { transform-box: fill-box; transform-origin: 50% 85%; }
 
 @media (max-width: 1099px) {
-  #dunber-bottle {
-    bottom: 12px;
-    right: 6px;
-    height: min(17vh, 125px);
-    opacity: .96;
-  }
+  #dunber-bottle { height: min(24vh, 200px); right: 16px; }
 }
-@media (max-width: 560px) {
-  #dunber-bottle { height: min(13vh, 95px); right: 2px; }
+/* Celular: botella chica en la esquina, a la altura del botón de WhatsApp y lejos del borde */
+@media (max-width: 760px) {
+  #dunber-bottle {
+    height: min(19svh, 140px);
+    right: 14px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    filter: drop-shadow(0 8px 10px rgba(40, 0, 0, .35));
+  }
 }

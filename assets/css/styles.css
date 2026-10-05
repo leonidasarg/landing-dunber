@@ -184,7 +184,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 /* Responsive */
 @media (min-width: 1100px) {
-  :root { --bottle-gutter: 190px; }
+  :root { --bottle-gutter: 130px; }
   .wrap { padding-right: calc(20px + var(--bottle-gutter)); }
 }
 @media (max-width: 900px) {
@@ -197,8 +197,15 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .nav a:not(.btn) { padding: 14px 0; border-bottom: 1px solid #f0e7e1; }
   .nav .btn { margin-top: 14px; }
   .row { grid-template-columns: 1fr; }
-  .route .city { font-size: .85rem; }
-  .hero-in { padding-right: 56px; }
+  .hero-in { min-height: 0; padding-block: 28px 96px; }
+  .eyebrow { font-size: .85rem; letter-spacing: .1em; margin-bottom: .75rem; }
+  .hero-title { font-size: clamp(2rem, 9.6vw, 2.7rem); }
+  .hero-lead { font-size: 1rem; margin: 1rem 0 1.4rem; }
+  .hero-cta .btn { flex: 1 1 100%; font-size: 1.1rem; padding: .75rem 1.2rem; }
+  .route { margin-top: 28px; }
+  .route .city { font-size: .8rem; letter-spacing: .04em; }
+  .wa-float { width: 52px; height: 52px; left: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); }
+  .site-footer { padding-bottom: 170px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
