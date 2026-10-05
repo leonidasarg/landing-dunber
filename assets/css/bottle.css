@@ -5,7 +5,7 @@
   right: clamp(8px, 2vw, 36px);
   top: calc(50% + 34px);
   transform: translateY(-50%);
-  height: min(68vh, 600px);
+  height: min(34vh, 300px);
   aspect-ratio: 120 / 400;
   pointer-events: none;
   filter: drop-shadow(0 18px 24px rgba(40, 0, 0, .35));
@@ -21,10 +21,10 @@
     bottom: 12px;
     right: 6px;
     transform: none;
-    height: min(34vh, 250px);
+    height: min(17vh, 125px);
     opacity: .96;
   }
 }
 @media (max-width: 560px) {
-  #dunber-bottle { height: min(26vh, 190px); right: 2px; }
+  #dunber-bottle { height: min(13vh, 95px); right: 2px; }
 }

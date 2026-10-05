@@ -12,14 +12,33 @@
   var stagger = anime.stagger;
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Contorno de la botella (viewBox 0 0 120 400), simétrico respecto de x = 60
-  var BOTTLE =
-    'M52,22 L68,22 C69.5,22 70,26 69,32 C68.5,48 68,56 70,64 C76,84 96,96 96,128 ' +
-    'C96,150 91,168 88,192 C86,206 86,216 89,232 C93,252 95,270 95,300 L95,372 ' +
-    'C95,386 90,392 82,392 L38,392 C30,392 25,386 25,372 L25,300 C25,270 27,252 31,232 ' +
-    'C34,216 34,206 32,192 C29,168 24,150 24,128 C24,96 44,84 50,64 C52,56 51.500,48 51,32 C50,26 50.500,22 52,22 Z';
+  // Ancho de la botella: escala horizontal respecto del eje x = 60
+  var WIDTH = 1.7;
+  function sx(d) {
+    return d.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g, function (m, x, y) {
+      return (60 + (x - 60) * WIDTH).toFixed(1) + ',' + y;
+    });
+  }
 
-  var LEVEL_TOP = 46;      // superficie del líquido con la botella llena (y)
+  // Contorno de la botella (viewBox 0 0 120 400), simétrico respecto de x = 60
+  var BOTTLE = sx(
+    'M50,22 L70,22 C71,24 71,28 69.5,31 C69,45 70,58 72,70 C75,88 89,102 90,130 ' +
+    'C91,152 85,176 83,198 C82,214 84,236 89,256 C92,270 92,290 91,320 ' +
+    'C90,345 88,360 88,374 C88,386 84,392 77,392 L43,392 ' +
+    'C36,392 32,386 32,374 C32,360 30,345 29,320 C28,290 28,270 31,256 ' +
+    'C36,236 38,214 37,198 C35,176 29,152 30,130 C31,102 45,88 48,70 ' +
+    'C50,58 51,45 50.5,31 C49,28 49,24 50,22 Z');
+
+  // Estrías verticales del vidrio en las dos curvas de la botella
+  function flutes() {
+    var d = '';
+    for (var x = 36; x <= 84; x += 6) {
+      d += 'M' + x + ',104 L' + x + ',184 M' + x + ',262 L' + x + ',368 ';
+    }
+    return sx(d);
+  }
+
+  var LEVEL_TOP = 64;      // superficie del líquido con la botella llena (y)
   var DRAIN = 360;         // recorrido total del líquido hasta quedar vacía
   var WAVE_PERIOD = 60;
 
@@ -43,7 +62,7 @@
   function bubbles(n) {
     var out = '';
     for (var i = 0; i < n; i++) {
-      var x = 34 + Math.random() * 52;
+      var x = 24 + Math.random() * 72;
       var r = 0.9 + Math.random() * 1.8;
       out += '<circle class="bub" cx="' + x.toFixed(1) + '" cy="' + (330 - Math.random() * 40).toFixed(0) +
         '" r="' + r.toFixed(1) + '" fill="#fff" fill-opacity=".55"/>';
@@ -59,16 +78,17 @@
     '<defs>' +
       '<clipPath id="db-clip"><path d="' + BOTTLE + '"/></clipPath>' +
       '<linearGradient id="db-liquid" x1="0" x2="1" y1="0" y2="0">' +
-        '<stop offset="0" stop-color="#1a0402"/><stop offset=".45" stop-color="#3a0d07"/><stop offset=".8" stop-color="#2a0804"/><stop offset="1" stop-color="#120301"/>' +
+        '<stop offset="0" stop-color="#1c0402"/><stop offset=".3" stop-color="#4f0d05"/><stop offset=".55" stop-color="#6d170a"/><stop offset=".8" stop-color="#3f0a04"/><stop offset="1" stop-color="#160301"/>' +
       '</linearGradient>' +
       '<linearGradient id="db-glass" x1="0" x2="1" y1="0" y2="0">' +
         '<stop offset="0" stop-color="#fff" stop-opacity=".38"/><stop offset=".25" stop-color="#fff" stop-opacity=".06"/><stop offset=".75" stop-color="#fff" stop-opacity=".04"/><stop offset="1" stop-color="#fff" stop-opacity=".3"/>' +
       '</linearGradient>' +
+      '<linearGradient id="db-tint" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#d8f0e6" stop-opacity=".35"/><stop offset=".8" stop-color="#9fd4bd" stop-opacity=".3"/><stop offset="1" stop-color="#4fa883" stop-opacity=".85"/></linearGradient>' +
       '<linearGradient id="db-foam" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f4d9b8"/><stop offset="1" stop-color="#7a2a14"/></linearGradient>' +
     '</defs>' +
     '<g class="tilt" id="db-tilt">' +
       // Interior de vidrio
-      '<path d="' + BOTTLE + '" fill="#bfe0dc" fill-opacity=".3"/>' +
+      '<path d="' + BOTTLE + '" fill="url(#db-tint)"/>' +
       // Líquido (se vacía bajando el grupo #db-level)
       '<g clip-path="url(#db-clip)">' +
         '<g id="db-level">' +
@@ -80,18 +100,21 @@
       '</g>' +
       // Reflejos del vidrio
       '<path d="' + BOTTLE + '" fill="url(#db-glass)"/>' +
-      '<path d="M33,130 C31,160 36,190 40,216" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3" stroke-linecap="round"/>' +
-      '<path d="M32,236 C31,262 31,290 31,330" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="2.5" stroke-linecap="round"/>' +
-      '<path d="M88,142 C89,160 87,180 86,196" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="2" stroke-linecap="round"/>' +
+      '<rect x="0" y="372" width="120" height="22" fill="#4fa883" fill-opacity=".45" clip-path="url(#db-clip)"/>' +
+      '<path d="' + flutes() + '" clip-path="url(#db-clip)" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="2.2" stroke-linecap="round"/>' +
+      '<path d="' + sx('M36,112 C33,135 34,160 39,184') + '" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="3" stroke-linecap="round"/>' +
+      '<path d="' + sx('M35,264 C33,290 33,320 35,352') + '" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2.6" stroke-linecap="round"/>' +
+      '<path d="' + sx('M84,124 C86,145 85,165 81,186') + '" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="2" stroke-linecap="round"/>' +
+      '<path d="' + sx('M55,36 L55,64') + '" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.6" stroke-linecap="round"/>' +
       // Contorno
-      '<path d="' + BOTTLE + '" fill="none" stroke="#2d4a47" stroke-opacity=".55" stroke-width="2.6" stroke-linejoin="round"/>' +
+      '<path d="' + BOTTLE + '" fill="none" stroke="#2f6b55" stroke-opacity=".6" stroke-width="2.6" stroke-linejoin="round"/>' +
       '<path d="' + BOTTLE + '" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="1.3" stroke-linejoin="round"/>' +
       '<path d="' + BOTTLE + '" fill="none" stroke="#5a0b11" stroke-opacity=".35" stroke-width=".8"/>' +
       // Tapa corona
-      '<path d="M48,8 L72,8 L74,16 C74,20 72,22 70,22 L50,22 C48,22 46,20 46,16 Z" fill="#e61a27" stroke="#8c0b14" stroke-width="1"/>' +
-      '<path d="M50,10 L50,20 M54,10 L54,20 M58,10 L58,20 M62,10 L62,20 M66,10 L66,20 M70,10 L70,20" stroke="#fff" stroke-opacity=".28" stroke-width="1"/>' +
+      '<path d="' + sx('M48,8 L72,8 L74,16 C74,20 72,22 70,22 L50,22 C48,22 46,20 46,16 Z') + '" fill="#e61a27" stroke="#8c0b14" stroke-width="1"/>' +
+      '<path d="' + sx('M50,10 L50,20 M54,10 L54,20 M58,10 L58,20 M62,10 L62,20 M66,10 L66,20 M70,10 L70,20') + '" stroke="#fff" stroke-opacity=".28" stroke-width="1"/>' +
       // Texto serigrafiado
-      '<text x="60" y="168" text-anchor="middle" font-family="Yellowtail, cursive" font-size="25" fill="#fff" transform="rotate(-8 60 168)">Coca-Cola</text>' +
+      '<text x="60" y="150" text-anchor="middle" font-family="Yellowtail, cursive" font-size="30" fill="#fff" transform="rotate(-6 60 150)" textLength="86" lengthAdjust="spacingAndGlyphs">Coca-Cola</text>' +
     '</g>' +
     '</svg>';
   document.body.appendChild(host);
